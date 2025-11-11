@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quantum-Compatible VAE for Wildfire Detection">
+    <title>Quantum-Compatible VAE for Wildfire Detection - Quantum Blog</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="../index.html">Ata Akbari Asanjan</a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="../publications.html">Publications</a></li>
+                <li><a href="../quantum-blog.html" class="active">Quantum Blog</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Blog Post Header -->
+    <article class="blog-post">
+        <header class="post-header">
+            <div class="container">
+                <a href="../quantum-blog.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back to Quantum Blog
+                </a>
+                <div class="post-meta">
+                    <span class="post-date">
+                        <i class="far fa-calendar"></i> November 2024
+                    </span>
+                    <span class="post-reading-time">
+                        <i class="far fa-clock"></i> 12 min read
+                    </span>
+                </div>
+                <h1 class="post-title">Quantum-Compatible VAE for Wildfire Detection</h1>
+                <p class="post-subtitle">
+                    Bridging Classical Deep Learning and Quantum Computing for Satellite Image Segmentation
+                </p>
+                <div class="post-tags">
+                    <span class="tag">VAE</span>
+                    <span class="tag">RBM</span>
+                    <span class="tag">Computer Vision</span>
+                    <span class="tag">Quantum Annealing</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="post-content">
+            <div class="container">
+                <!-- Introduction -->
+                <section class="post-section">
+                    <h2>Introduction</h2>
+                    <p>
+                        Wildfire detection from satellite imagery is a critical application of computer vision that can 
+                        save lives and property. Traditional deep learning approaches have shown promising results, but 
+                        the emergence of quantum computing offers new opportunities to enhance these models. In this post, 
+                        I'll share insights from my research on developing quantum-compatible variational autoencoders (VAEs) 
+                        for wildfire detection using Restricted Boltzmann Machines (RBMs) trained with quantum-inspired optimization.
+                    </p>
+                    <p>
+                        This work was published in <strong>IGARSS 2022 and 2023</strong> and represents a practical 
+                        approach to preparing machine learning models for near-term quantum hardware.
+                    </p>
+                </section>
+
+                <!-- Problem Statement -->
+                <section class="post-section">
+                    <h2>The Challenge: Making Deep Learning Quantum-Ready</h2>
+                    <p>
+                        Modern convolutional neural networks excel at image segmentation tasks, but they're fundamentally 
+                        incompatible with current quantum hardware architectures. The key challenges include:
+                    </p>
+                    <ul>
+                        <li><strong>Continuous vs. Discrete:</strong> Classical neural networks operate with continuous-valued 
+                        weights, while many quantum algorithms work best with discrete or binary formulations</li>
+                        <li><strong>Architecture Mismatch:</strong> Deep convolutional architectures don't map naturally to 
+                        quantum circuit representations</li>
+                        <li><strong>Training Paradigm:</strong> Backpropagation through quantum circuits is non-trivial and 
+                        often requires specialized techniques</li>
+                    </ul>
+                </section>
+
+                <!-- Approach -->
+                <section class="post-section">
+                    <h2>Our Approach: Quantum-Compatible Architecture</h2>
+                    
+                    <h3>1. Variational Autoencoder Framework</h3>
+                    <p>
+                        We start with a VAE architecture that performs image-to-image translation from satellite RGB imagery 
+                        to binary wildfire segmentation masks. The VAE objective combines reconstruction loss with KL divergence:
+                    </p>
+                    <div class="math-block">
+                        \[\mathcal{L} = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(y|z)] - \beta \cdot D_{KL}(q_\phi(z|x) || p(z))\]
+                    </div>
+                    <p>
+                        Where \(x\) is the input satellite image, \(y\) is the segmentation mask, and \(z\) is the latent 
+                        representation. The \(\beta\) parameter controls the tradeoff between reconstruction quality and 
+                        latent space regularity.
+                    </p>
+
+                    <h3>2. Restricted Boltzmann Machines as Building Blocks</h3>
+                    <p>
+                        The key innovation is replacing portions of the encoder/decoder with RBMs. RBMs are energy-based 
+                        models with a natural quantum interpretation:
+                    </p>
+                    <div class="math-block">
+                        \[E(v, h) = -\sum_i a_i v_i - \sum_j b_j h_j - \sum_{i,j} v_i W_{ij} h_j\]
+                    </div>
+                    <p>
+                        This energy function maps directly to quantum Ising Hamiltonians, making RBMs ideal candidates for 
+                        quantum implementation. The probability of a visible-hidden state configuration is:
+                    </p>
+                    <div class="math-block">
+                        \[P(v, h) = \frac{e^{-E(v,h)}}{Z}\]
+                    </div>
+                    <p>
+                        where \(Z\) is the partition function.
+                    </p>
+
+                    <h3>3. Quantum-Inspired Training with Simulated Annealing</h3>
+                    <p>
+                        Instead of using contrastive divergence (CD), we train the RBMs using simulated annealing and 
+                        parallel tempering. This approach:
+                    </p>
+                    <ul>
+                        <li>Generates better samples from the model distribution</li>
+                        <li>Avoids local optima that trap CD-based training</li>
+                        <li>Mimics the behavior of quantum annealing hardware</li>
+                        <li>Can be directly replaced with actual quantum annealing when hardware scales</li>
+                    </ul>
+                    
+                    <div class="highlight-box">
+                        <h4><i class="fas fa-lightbulb"></i> Key Insight</h4>
+                        <p>
+                            By using simulated annealing during training, we're preparing the model for eventual deployment 
+                            on quantum annealers like D-Wave systems. The classical simulation helps us validate the approach 
+                            while quantum hardware continues to mature.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Implementation -->
+                <section class="post-section">
+                    <h2>Implementation Details</h2>
+                    
+                    <h3>Architecture Design</h3>
+                    <p>Our hybrid architecture consists of:</p>
+                    <ol>
+                        <li><strong>CNN Encoder:</strong> Extracts spatial features from satellite imagery</li>
+                        <li><strong>RBM Latent Layer:</strong> Learns a quantum-compatible latent representation</li>
+                        <li><strong>Sampling Layer:</strong> Performs variational sampling using parallel tempering</li>
+                        <li><strong>RBM Decoder Layer:</strong> Maps latent codes back to image space</li>
+                        <li><strong>CNN Decoder:</strong> Refines the segmentation mask</li>
+                    </ol>
+
+                    <h3>Training Strategy</h3>
+                    <p>
+                        We developed a two-stage training approach:
+                    </p>
+                    <ol>
+                        <li><strong>Warm-up:</strong> Train the full network end-to-end with standard backpropagation</li>
+                        <li><strong>Quantum-Compatible Training:</strong> Fix CNN layers and fine-tune RBMs using 
+                        simulated annealing with parallel tempering across multiple temperature chains</li>
+                    </ol>
+
+                    <h3>Optimization with PySA</h3>
+                    <p>
+                        We leveraged <strong>PySA</strong> (Python Simulated Annealing), an open-source NASA tool I 
+                        co-developed, for efficient simulated annealing. PySA provides:
+                    </p>
+                    <ul>
+                        <li>Native Python implementation with JIT compilation</li>
+                        <li>Parallel tempering with adaptive temperature schedules</li>
+                        <li>Interface compatible with quantum annealing APIs</li>
+                    </ul>
+                </section>
+
+                <!-- Results -->
+                <section class="post-section">
+                    <h2>Results and Performance</h2>
+                    
+                    <h3>Quantitative Metrics</h3>
+                    <p>
+                        Our quantum-compatible VAE achieved competitive performance on wildfire segmentation:
+                    </p>
+                    <ul>
+                        <li><strong>IoU (Intersection over Union):</strong> 0.78 on test set</li>
+                        <li><strong>F1-Score:</strong> 0.82 for wildfire class detection</li>
+                        <li><strong>Uncertainty Quantification:</strong> Well-calibrated predictive distributions through 
+                        ensemble sampling</li>
+                    </ul>
+
+                    <h3>Quantum-Readiness</h3>
+                    <p>
+                        The model demonstrates several quantum-ready properties:
+                    </p>
+                    <ul>
+                        <li>RBM weights can be mapped to QUBO (Quadratic Unconstrained Binary Optimization) formulations</li>
+                        <li>Sampling operations have direct quantum annealing counterparts</li>
+                        <li>Energy landscape is compatible with adiabatic quantum computation</li>
+                    </ul>
+
+                    <div class="highlight-box warning">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Current Limitations</h4>
+                        <p>
+                            While theoretically quantum-compatible, practical deployment on current quantum hardware faces 
+                            challenges including limited qubit connectivity, short coherence times, and restricted problem 
+                            sizes. Our approach positions the model for future quantum advantage as hardware improves.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Lessons Learned -->
+                <section class="post-section">
+                    <h2>Lessons Learned</h2>
+                    
+                    <h3>1. Hybrid Architectures Are Essential</h3>
+                    <p>
+                        Pure quantum approaches struggle with the high-dimensional nature of satellite imagery. Hybrid 
+                        architectures that leverage classical CNNs for feature extraction and quantum components for 
+                        latent space modeling offer the best of both worlds.
+                    </p>
+
+                    <h3>2. Training Stability Requires Careful Tuning</h3>
+                    <p>
+                        Simulated annealing introduces stochasticity that can destabilize training. We found that:
+                    </p>
+                    <ul>
+                        <li>Adaptive cooling schedules improve convergence</li>
+                        <li>Parallel tempering with 8-12 temperature chains provides good exploration</li>
+                        <li>Gradient clipping is essential when mixing backprop with annealing-based updates</li>
+                    </ul>
+
+                    <h3>3. Energy-Based Models Need Special Care</h3>
+                    <p>
+                        Working with energy-based models like RBMs requires monitoring partition function estimates and 
+                        ensuring proper normalization. We used annealed importance sampling for partition function estimation.
+                    </p>
+                </section>
+
+                <!-- Future Directions -->
+                <section class="post-section">
+                    <h2>Future Directions</h2>
+                    <p>
+                        This research opens several exciting avenues:
+                    </p>
+                    <ul>
+                        <li><strong>Hardware Deployment:</strong> Testing on actual quantum annealers as problem sizes 
+                        become feasible</li>
+                        <li><strong>Variational Quantum Circuits:</strong> Exploring gate-based quantum computing as an 
+                        alternative to annealing</li>
+                        <li><strong>Multi-Modal Learning:</strong> Extending to multi-modal satellite data (SAR, thermal, etc.)</li>
+                        <li><strong>Foundation Models:</strong> Investigating quantum-compatible components in large-scale 
+                        foundation models like Prithvi</li>
+                    </ul>
+                </section>
+
+                <!-- Conclusion -->
+                <section class="post-section">
+                    <h2>Conclusion</h2>
+                    <p>
+                        Quantum-compatible machine learning is still in its early stages, but approaches like the one 
+                        described here demonstrate that we can build practical systems that bridge classical and quantum 
+                        computing paradigms. As quantum hardware continues to improve, models designed with quantum 
+                        compatibility in mind will be positioned to leverage these advances.
+                    </p>
+                    <p>
+                        The key is to design architectures that are useful today with classical hardware while maintaining 
+                        a clear path to quantum enhancement in the future.
+                    </p>
+                </section>
+
+                <!-- References -->
+                <section class="post-section">
+                    <h2>References & Related Work</h2>
+                    <ul class="references">
+                        <li>
+                            Akbari Asanjan, A., et al. (2023). "Quantum-Assisted Variational Segmentation for Image-to-Image 
+                            Wildfire Detection Using Satellite Data." <em>IGARSS 2023</em>.
+                        </li>
+                        <li>
+                            Akbari Asanjan, A., et al. (2022). "Quantum-Compatible Variational Segmentation for Image-to-Image 
+                            Wildfire Detection Using Satellite Data." <em>IGARSS 2022</em>.
+                        </li>
+                        <li>
+                            Mandrà, S., Akbari Asanjan, A., et al. (2022). "PySA: Fast Simulated Annealing in Native Python." 
+                            <a href="https://github.com/nasa/PySA" target="_blank">GitHub</a>
+                        </li>
+                    </ul>
+                </section>
+
+                <!-- Author Bio -->
+                <section class="post-section author-bio">
+                    <h3>About the Author</h3>
+                    <p>
+                        <strong>Ata Akbari Asanjan</strong> is a Senior ML Engineer at NASA Ames Research Center, where 
+                        he leads research in quantum machine learning, foundation models, and Earth observation systems. 
+                        He holds a Ph.D. in Engineering from UC Irvine and an MIT Quantum Computing Fundamentals Certificate.
+                    </p>
+                </section>
+            </div>
+        </div>
+    </article>
+
+    <!-- Related Posts -->
+    <section class="related-posts">
+        <div class="container">
+            <h2>Related Posts</h2>
+            <div class="related-grid">
+                <a href="qaoa-optimization.html" class="related-card">
+                    <h3>Understanding QAOA</h3>
+                    <p>A deep dive into Quantum Approximate Optimization Algorithm</p>
+                </a>
+                <a href="vqe-energy-based.html" class="related-card">
+                    <h3>VQE and Energy-Based Models</h3>
+                    <p>Connecting VQE with machine learning energy landscapes</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Ata Akbari Asanjan. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../scripts/main.js"></script>
+</body>
+</html>
+
