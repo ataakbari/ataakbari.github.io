@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="../styles/github-style.css">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@13/dist/markdown-it.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath@1/dist/markdown-it-texmath.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 </head>
 <body>
     <nav class="navbar">
@@ -55,28 +57,74 @@
         <div class="footer-content">
             <p>&copy; 2025 Ata Akbari Asanjan. All rights reserved.</p>
             <div class="social-links">
-                <a href="https://scholar.google.com/citations?user=YOUR_ID" target="_blank" rel="noopener noreferrer">Google Scholar</a>
+                <a href="https://scholar.google.com/citations?user=5M5ynb8AAAAJ" target="_blank" rel="noopener noreferrer">Google Scholar</a>
                 <a href="https://github.com/ataakbari" target="_blank" rel="noopener noreferrer">GitHub</a>
-                <a href="https://linkedin.com/in/YOUR_PROFILE" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                <a href="https://linkedin.com/in/ataakbariasanjan" target="_blank" rel="noopener noreferrer">LinkedIn</a>
             </div>
         </div>
     </footer>
 
-    <script src="../scripts/markdown-renderer.js"></script>
     <script>
-        // Load and render the markdown content
+        // Configure MathJax
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            }
+        };
+    </script>
+    <script>
+        // Load and render the markdown content with markdown-it
         document.addEventListener('DOMContentLoaded', async function() {
             const container = document.getElementById('markdown-content');
-            const html = await loadMarkdownPost('hamming-error-correction.md');
-            container.innerHTML = html;
             
-            // Render math if MathJax is available
-            if (window.MathJax) {
-                MathJax.typesetPromise([container]).catch((err) => console.error(err));
+            try {
+                // Fetch markdown content
+                const response = await fetch('hamming-error-correction.md');
+                if (!response.ok) throw new Error('Failed to load markdown');
+                const markdown = await response.text();
+                
+                // Initialize markdown-it with texmath plugin
+                const md = window.markdownit({
+                    html: true,
+                    linkify: true,
+                    typographer: true,
+                    breaks: true
+                });
+                
+                // Add texmath plugin if available
+                if (window.texmath) {
+                    md.use(window.texmath, {
+                        engine: {
+                            renderToString: (tex) => {
+                                // Return raw LaTeX for MathJax to process
+                                return tex;
+                            }
+                        },
+                        delimiters: 'dollars'
+                    });
+                }
+                
+                // Render markdown to HTML
+                let html = md.render(markdown);
+                container.innerHTML = html;
+                
+                // Render math with MathJax
+                if (window.MathJax) {
+                    await MathJax.typesetPromise([container]);
+                }
+                
+                // Generate table of contents
+                generateTOC();
+            } catch (error) {
+                console.error('Error loading markdown:', error);
+                container.innerHTML = '<p>Error loading blog post. Please try again later.</p>';
             }
-            
-            // Generate table of contents
-            generateTOC();
         });
         
         // Generate table of contents from headers

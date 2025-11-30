@@ -1,6 +1,6 @@
 /**
- * Simple Markdown to HTML renderer
- * Using marked.js library for parsing
+ * Markdown to HTML renderer using markdown-it
+ * Supports math rendering via markdown-it-texmath
  */
 
 // Load and render markdown file
@@ -20,59 +20,33 @@ async function loadMarkdownPost(mdFile) {
 
 // Render markdown content
 function renderMarkdown(markdown) {
-    // Using marked.js from CDN
-    if (typeof marked !== 'undefined') {
-        marked.setOptions({
-            highlight: function(code, lang) {
-                return code; // Can integrate with highlight.js if needed
-            },
-            breaks: true,
-            gfm: true
+    // Check if markdown-it is available
+    if (typeof window.markdownit !== 'undefined') {
+        const md = window.markdownit({
+            html: true,
+            linkify: true,
+            typographer: true,
+            breaks: true
         });
+        
+        // Use texmath plugin if available
+        if (window.texmath) {
+            md.use(window.texmath, {
+                engine: {
+                    renderToString: (tex) => tex // Let MathJax handle rendering
+                },
+                delimiters: 'dollars',
+                katex: false
+            });
+        }
+        
+        return md.render(markdown);
+    } else if (typeof marked !== 'undefined') {
+        // Fallback to marked.js if markdown-it is not loaded
         return marked.parse(markdown);
     } else {
-        // Fallback to simple markdown parsing
-        return simpleMarkdownParse(markdown);
+        return `<p>Error: Markdown parser not loaded.</p><pre>${markdown}</pre>`;
     }
-}
-
-// Simple fallback markdown parser
-function simpleMarkdownParse(markdown) {
-    let html = markdown;
-    
-    // Headers
-    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-    html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-    html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-    
-    // Bold
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    
-    // Italic
-    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    
-    // Links
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
-    
-    // Code blocks
-    html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-    
-    // Inline code
-    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-    
-    // Lists
-    html = html.replace(/^\* (.*$)/gim, '<li>$1</li>');
-    html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-    
-    // Paragraphs
-    html = html.split('\n\n').map(para => {
-        if (!para.startsWith('<')) {
-            return `<p>${para}</p>`;
-        }
-        return para;
-    }).join('\n');
-    
-    return html;
 }
 
 // Initialize markdown rendering on page load
@@ -101,4 +75,3 @@ document.addEventListener('DOMContentLoaded', async function() {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { loadMarkdownPost, renderMarkdown };
 }
-

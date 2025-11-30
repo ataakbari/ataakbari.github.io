@@ -1256,6 +1256,27 @@ ul {
 }
 
 /* ===================================
+   Math Display Styling
+   =================================== */
+.math-display {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius);
+    overflow-x: auto;
+    text-align: center;
+}
+
+.math-display .MathJax {
+    font-size: 1.1em;
+}
+
+/* Inline math should blend with text */
+.MJX-TEX {
+    display: inline;
+}
+
+/* ===================================
    Responsive Design
    =================================== */
 @media (max-width: 768px) {
